@@ -37,7 +37,7 @@ class Nodes():
 		for email in emails:
 			# Filter emails based on three conditions:
 			# 1. email['id'] not in checked_emails: Skip emails we've already processed
-			# 2. email['threadId'] not in thread: Only process one email per thread/conversation
+			# 2. email['threadId'] not in thread: to ensure that we are completely looking at the new thread
 			# 3. os.environ['MY_EMAIL'] not in email['sender']: Skip emails sent by myself
 			if (email['id'] not in checked_emails) and (email['threadId'] not in thread) and ( os.environ['MY_EMAIL'] not in email['sender']):
 				# Add thread ID to prevent processing other emails from same conversation
