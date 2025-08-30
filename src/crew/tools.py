@@ -32,7 +32,21 @@ def get_gmail_thread(thread_id: str) -> str:
     gmail = GmailToolkit()
     get_thread = GmailGetThread(api_resource=gmail.api_resource)
     result = get_thread({"thread_id": thread_id})
-    return result
+    
+    # Extract sender email from the thread for better context
+    if isinstance(result, dict) and 'messages' in result:
+        for message in result['messages']:
+            if 'payload' in message and 'headers' in message['payload']:
+                headers = message['payload']['headers']
+                from_header = next((h['value'] for h in headers if h['name'] == 'From'), None)
+                if from_header:
+                    # Extract email from "Name <email@domain.com>" format
+                    if '<' in from_header:
+                        sender_email = from_header.split('<')[1].split('>')[0]
+                        result['sender_email'] = sender_email
+                    break
+    
+    return str(result)
 
 @tool("Search Web")
 def search_web(query: str) -> str:

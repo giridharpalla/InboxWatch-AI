@@ -34,6 +34,7 @@ class EmailFilterCrew():
 				f"- Thread ID: {email['threadId']}",
 				f"- Snippet: {email['snippet']}",
 				f"- From: {email['sender']}",
+				f"- Sender Email: {email.get('sender_email', 'Unknown')}",
 				f"--------"
 			]
 			emails_string.append("\n".join(arr))

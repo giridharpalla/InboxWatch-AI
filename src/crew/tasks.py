@@ -19,7 +19,8 @@ class EmailFilterTasks:
 
 				Your final answer MUST be a the relevant thread_ids and the sender, use bullet points.
 				"""),
-			agent=agent
+			agent=agent,
+			expected_output="A list of relevant thread IDs and senders that require action, formatted as bullet points."
 		)
 
 	def action_required_emails_task(self, agent):
@@ -40,7 +41,8 @@ class EmailFilterTasks:
 				- communication style in the thread
 				- the sender's email address
 				"""),
-			agent=agent
+			agent=agent,
+			expected_output="A detailed analysis of each email thread including thread ID, summary, main points, sender information, and communication style."
 		)
 
 	def draft_responses_task(self, agent):
@@ -64,5 +66,6 @@ class EmailFilterTasks:
 				You MUST create all drafts before sending your final answer.
 				Your final answer MUST be a confirmation that all responses have been drafted.
 				"""),
-			agent=agent
+			agent=agent,
+			expected_output="Confirmation that all email drafts have been created successfully, with details of each draft created."
 		)
