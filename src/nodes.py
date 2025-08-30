@@ -26,20 +26,39 @@ class Nodes():
 		search = GmailSearch(api_resource=self.gmail.api_resource)
 		emails = search('after:newer_than:1d')
 		
+		print(f"## Found {len(emails)} total emails from search")
+		
 		# Get list of previously checked email IDs to avoid duplicates
 		checked_emails = state['checked_emails_ids'] if state['checked_emails_ids'] else []
+		print(f"## Previously checked emails: {len(checked_emails)}")
+		
+		# Check if MY_EMAIL environment variable is set
+		my_email = os.environ.get('MY_EMAIL', '')
+		print(f"## MY_EMAIL environment variable: {my_email}")
 		
 		# Track thread IDs to avoid processing multiple emails from same conversation
 		thread = []
 		new_emails = []
 		
 		# Process each email and apply filtering criteria
-		for email in emails:
+		for i, email in enumerate(emails):
+			print(f"## Processing email {i+1}: ID={email.get('id', 'N/A')}, Sender={email.get('sender', 'N/A')}")
+			
+			# Check each filter condition
+			not_checked = email['id'] not in checked_emails
+			new_thread = email['threadId'] not in thread
+			not_from_me = my_email not in email['sender'] if my_email else True
+			
+			print(f"   - Not checked: {not_checked}")
+			print(f"   - New thread: {new_thread}")
+			print(f"   - Not from me: {not_from_me}")
+			
 			# Filter emails based on three conditions:
 			# 1. email['id'] not in checked_emails: Skip emails we've already processed
 			# 2. email['threadId'] not in thread: to ensure that we are completely looking at the new thread
 			# 3. os.environ['MY_EMAIL'] not in email['sender']: Skip emails sent by myself
-			if (email['id'] not in checked_emails) and (email['threadId'] not in thread) and ( os.environ['MY_EMAIL'] not in email['sender']):
+			if not_checked and new_thread and not_from_me:
+				print(f"   - ✓ Email passed all filters")
 				# Add thread ID to prevent processing other emails from same conversation
 				thread.append(email['threadId'])
 				
@@ -52,11 +71,16 @@ class Nodes():
 						"sender": email["sender"]
 					}
 				)
+			else:
+				print(f"   - ✗ Email filtered out")
+		
+		print(f"## Final result: {len(new_emails)} new emails after filtering")
 		
 		# Mark all retrieved emails as checked to avoid reprocessing
 		checked_emails.extend([email['id'] for email in emails])
 		
 		return {
+			# Here we are unpacking the dict and then overwriting the prevs with new mails, 
 			**state,
 			"emails": new_emails,
 			"checked_emails_ids": checked_emails
@@ -85,13 +109,11 @@ class Nodes():
 		Returns:
 			'end' if no new emails found, 'continue' if new emails exist
 		"""
-		# Check if any new emails were found in the current check
+
 		if len(state['emails']) == 0:
 			print("## No new emails")
-			# No new emails found, end the current workflow cycle
 			return "end"
 		else:
 			print("## New emails")
-			# New emails found, continue to next step in workflow
 			return "continue"
 
