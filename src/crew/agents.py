@@ -1,9 +1,8 @@
 from langchain_community.agent_toolkits import GmailToolkit
-from langchain_community.tools.gmail.get_thread import GmailGetThread
 
 from textwrap import dedent
 from crewai import Agent
-from .tools import CreateDraftTool, GmailTool
+from .tools import create_draft, get_gmail_thread, search_web
 
 class EmailFilterAgents():
 	def __init__(self):
@@ -23,7 +22,6 @@ class EmailFilterAgents():
 		)
 
 	def email_action_agent(self):
-
 		return Agent(
 			role='Email Action Specialist',
 			goal='Identify action-required emails and compile a list of their IDs',
@@ -31,7 +29,10 @@ class EmailFilterAgents():
 				With a keen eye for detail and a knack for understanding context, you specialize
 				in identifying emails that require immediate action. Your skill set includes interpreting
 				the urgency and importance of an email based on its content and context."""),
-			tools=[GmailTool()],
+			tools=[
+				get_gmail_thread,
+				search_web
+			],
 			verbose=True,
 			allow_delegation=False,
 		)
@@ -44,7 +45,11 @@ class EmailFilterAgents():
 				You are a skilled writer, adept at crafting clear, concise, and effective email responses.
 				Your strength lies in your ability to communicate effectively, ensuring that each response is
 				tailored to address the specific needs and context of the email."""),
-			tools=[GmailTool(), CreateDraftTool()],
+			tools=[
+				search_web,
+				get_gmail_thread,
+				create_draft
+			],
 			verbose=True,
 			allow_delegation=False,
 		)

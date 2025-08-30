@@ -1,12 +1,49 @@
-# CrewAI + LangGraph
+# InboxWatch-AI## Tech Stack
+- **CrewAI**: Manages AI agents that work together
+- **LangGraph**: Controls the workflow between different steps
+- **Gmail API**: Reads emails and creates drafts
+- **Tavily Search**: Web search for additional context
+- **Python**: Main programming language
 
-## Introduction
-This is an example of how to use the [CrewAI](https://github.com/joaomdmoura/crewai) with LangChain and LangGraph to automate the process of automatically checking emails and creating drafts. CrewAI orchestrates autonomous AI agents, enabling them to collaborate and execute complex tasks efficiently.
+## Setup Instructions
+
+### 1. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Setup Gmail API
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable Gmail API
+4. Create credentials (OAuth 2.0 client ID)
+5. Download the credentials file and rename it to `credentials.json`
+6. Put `credentials.json` in the project root folder
+
+### 3. Environment Variables
+Create a `.env` file with:
+```
+OPENAI_API_KEY=your_openai_api_key
+TAVILY_API_KEY=your_tavily_api_key
+MY_EMAIL=your_email@gmail.com
+```
+
+### 4. Run the Application
+```bash
+python main.py
+```Does
+This project automatically checks your Gmail inbox for new emails and creates draft responses for emails that need action. It uses AI agents to filter emails and write responses.
+
+## How It Works
+1. **Email Checker**: Looks for new emails in your Gmail
+2. **Email Filter**: AI agent decides which emails need action
+3. **Response Writer**: AI agent writes draft responses
+4. **Gmail Integration**: Creates drafts in your Gmail account
 
 ![High level image](./CrewAI-LangGraph.png)
 
 
-By [@joaomdmoura](https://x.com/joaomdmoura)
+By Giridhar Palla (@giridharpalla)
 
 - [CrewAI Framework](#crewai-framework)
 - [Running the code](#running-the-code)
@@ -25,16 +62,58 @@ This example uses GPT-4.
 - **Install Dependencies**: Run `pip install -r requirements.txt` (includes crewAI==0.130.0)
 - **Execute the Script**: Run `python main.py`
 
-## Details & Explanation
-- **Running the Script**: Execute `python main.py`
-- **Key Components**:
-	- `./src/graph.py`: Class defining the nodes and edges.
-	- `./src/nodes.py`: Class with the function for each node.
-	- `./src/state.py`: State declaration.
-	- `./src/crew/agents.py`: Class defining the CrewAI Agents.
-	- `./src/crew/tasks.py`: Class definig the CrewAI Tasks.
-	- `./src/crew/crew.py`: Class defining the CrewAI Crew.
-	- `./src/crew/tools.py`: Class implementing the GmailDraft Tool.
+## Project Structure
+```
+├── main.py                 # Main application entry point
+├── src/
+│   ├── graph.py           # LangGraph workflow definition
+│   ├── nodes.py           # Individual workflow functions
+│   ├── state.py           # Data structure for workflow state
+│   └── crew/
+│       ├── agents.py      # AI agent definitions
+│       ├── tasks.py       # Tasks for AI agents
+│       ├── crew.py        # CrewAI team configuration
+│       └── tools.py       # Custom tools for agents
+├── requirements.txt       # Python dependencies
+├── credentials.json       # Gmail API credentials (you create this)
+└── README.md             # This file
+```
 
-## License
-This project is released under the MIT License.
+## What Each AI Agent Does
+
+### Email Filter Agent
+- Reads new emails
+- Decides if email needs action
+- Filters out spam, newsletters, promotional emails
+
+### Email Action Agent
+- Gets full email content for important emails
+- Uses web search for context if needed
+- Identifies what action is required
+
+### Email Response Writer
+- Writes professional draft responses
+- Uses context from email content
+- Creates drafts in Gmail
+
+## Requirements
+- Python 3.11+
+- OpenAI API key
+- Tavily API key
+- Gmail account with API access
+- Internet connection
+
+## Notes
+- The app checks for emails from the last 24 hours
+- It waits 3 minutes between checks
+- Drafts are saved to your Gmail drafts folder
+- Your own emails are ignored
+
+## Troubleshooting
+- Make sure `credentials.json` is in the root folder
+- Check that all API keys are correct in `.env` file
+- Ensure Gmail API is enabled in Google Cloud Console
+- Run `pip install -r requirements.txt` if you get import errors
+
+## Author
+Created by Giridhar Palla (@giridharpalla)
