@@ -52,20 +52,21 @@ class EmailFilterTasks:
 				Ensure that each response is tailored to address the specific needs
 				and context outlined in the email.
 
-				- Assume the persona of the user and mimic the communication style in the thread.
-				- Feel free to do research on the topic to provide a more detailed response, IF NECESSARY.
-				- IF a research is necessary do it BEFORE drafting the response.
-				- If you need to pull the thread again do it using only the actual Thread ID.
+				IMPORTANT INSTRUCTIONS:
+				- You MUST use the ACTUAL sender's email address from the Gmail thread, NOT placeholder emails
+				- Extract the real sender email from the thread headers (usually in From field)
+				- Do NOT use recipient1@example.com, recipient2@example.com or similar placeholder emails
+				- Assume the persona of the user and mimic the communication style in the thread
+				- Feel free to do research on the topic to provide a more detailed response, IF NECESSARY
+				- IF research is necessary do it BEFORE drafting the response
+				- If you need to pull the thread again do it using only the actual Thread ID
 
-				Use the tool provided to draft each of the responses.
-				When using the tool pass the following input:
-				- to (sender to be responded)
-				- subject
-				- message
+				Use the Create Draft tool with the following format:
+				actual_sender_email|subject|message
 
 				You MUST create all drafts before sending your final answer.
 				Your final answer MUST be a confirmation that all responses have been drafted.
 				"""),
 			agent=agent,
-			expected_output="Confirmation that all email drafts have been created successfully, with details of each draft created."
+			expected_output="Confirmation that all email drafts have been created successfully using ACTUAL sender email addresses, with details of each draft created."
 		)

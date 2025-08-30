@@ -30,8 +30,14 @@ class Nodes():
 				print(f"Found {len(emails)} emails with empty search")
 		
 		checked_emails = state.get('checked_emails_ids', [])
+		processed_threads = state.get('processed_thread_ids', [])
 		thread = []
 		new_emails = []
+		
+		print(f"My email from env: {os.environ.get('MY_EMAIL', 'NOT_SET')}")
+		print(f"Already checked emails: {len(checked_emails)}")
+		print(f"Already processed threads: {len(processed_threads)}")
+		
 		for email in emails:
 			# Extract email address from sender (handle format "Name <email@domain.com>")
 			sender_email = email['sender']
@@ -39,8 +45,11 @@ class Nodes():
 				# Extract email from "Name <email@domain.com>" format
 				sender_email = sender_email.split('<')[1].split('>')[0]
 			
+			print(f"Processing email from: {sender_email}")
+			print(f"Thread ID: {email['threadId']}")
+			
 			# Skip if: already checked, thread already processed, or email is from user
-			if (email['id'] not in checked_emails) and (email['threadId'] not in thread) and (sender_email != os.environ.get('MY_EMAIL', '')):
+			if (email['id'] not in checked_emails) and (email['threadId'] not in thread) and (email['threadId'] not in processed_threads) and (sender_email != os.environ.get('MY_EMAIL', '')):
 				thread.append(email['threadId'])
 				new_emails.append(
 					{
@@ -51,11 +60,15 @@ class Nodes():
 						"sender_email": sender_email  # Add clean email address
 					}
 				)
+				print(f"Added email from {sender_email} to new_emails")
+			else:
+				print(f"Skipped email from {sender_email} (already processed or from self)")
 		checked_emails.extend([email['id'] for email in emails])
 		return {
 			**state,
 			"emails": new_emails,
-			"checked_emails_ids": checked_emails
+			"checked_emails_ids": checked_emails,
+			"processed_thread_ids": processed_threads  # Maintain the processed threads list
 		}
 
 	def wait_next_run(self, state):

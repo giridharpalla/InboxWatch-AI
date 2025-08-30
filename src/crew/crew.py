@@ -23,7 +23,17 @@ class EmailFilterCrew():
 			verbose=True
 		)
 		result = crew.kickoff()
-		return {**state, "action_required_emails": result}
+		
+		# Mark threads as processed to prevent reprocessing
+		processed_threads = state.get('processed_thread_ids', [])
+		current_thread_ids = [email['threadId'] for email in state['emails']]
+		processed_threads.extend(current_thread_ids)
+		
+		return {
+			**state, 
+			"action_required_emails": result,
+			"processed_thread_ids": list(set(processed_threads))  # Remove duplicates
+		}
 
 	def _format_emails(self, emails):
 		emails_string = []
